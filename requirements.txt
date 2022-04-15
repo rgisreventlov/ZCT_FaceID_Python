@@ -1,0 +1,8 @@
+azure-cognitiveservices-vision-face
+azure-cognitiveservices-vision-computervision
+azure-cognitiveservices-vision-customvision
+pillow
+pandas
+opencv-python
+glob2
+numpy
