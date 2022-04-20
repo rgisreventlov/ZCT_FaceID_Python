@@ -2,6 +2,8 @@ import base64
 import io
 import json
 import numpy as np
+import mysql.connector
+from DB.db_conn import Database, add_row
 from PIL import Image, ImageDraw, ImageFont
 from azure.cognitiveservices.vision.face import FaceClient
 from flask import Flask, render_template, Response, url_for, send_from_directory
@@ -16,6 +18,11 @@ with open('api_key.json', 'r') as f:
 API_KEY = settings['key']
 ENDPOINT = settings['endpoint']
 face_client = FaceClient(ENDPOINT, CognitiveServicesCredentials(API_KEY))
+hostname = "zctdatabase123.cxlbzmlhujsn.eu-central-1.rds.amazonaws.com"
+username = "admin"
+password = "XGcuP1YfAp8V0DgEH588"
+database = "ZCT"
+
 
 global img_id
 img_id = 0
@@ -72,7 +79,7 @@ def draw_one_image(image, faces_of_image):
         return img
 
     for face in faces_of_image:
-        # face_id = face.face_id
+        face_id = face.face_id
         age = face.face_attributes.age
         emotion = face.face_attributes.emotion
         gender = face.face_attributes.gender
@@ -80,6 +87,10 @@ def draw_one_image(image, faces_of_image):
         happiness = '{0:.0f}%'.format(emotion.happiness * 100)
         anger = '{0:.0f}%'.format(emotion.anger * 100)
         sandness = '{0:.0f}%'.format(emotion.sadness * 100)
+
+        with Database() as db:
+            add_row(db, face_id, age)
+            print("Row added")
 
         # Rectange for face
         rect = face.face_rectangle
